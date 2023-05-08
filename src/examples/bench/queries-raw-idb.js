@@ -43,6 +43,37 @@ export function populate(db, count, output, outputTiming) {
   });
 }
 
+export function populateManyTransactions(db, count, output, outputTiming) {
+  output(`Inserting ${formatNumber(count)} items (raw idb)`);
+
+  let arr = [];
+  for (let i = 0; i < count; i++) {
+    arr.push(new Promise((resolve, reject) => {
+    let start = Date.now();
+    let trans = db.transaction(['kv'], 'readwrite');
+    let store = trans.objectStore('kv');
+        let id = uid(i);
+        let value = (Math.random() * 100) | 0;
+        store.put(value, id);
+      trans.oncomplete = () => {
+        if (i == count - 1) {
+          let took = Date.now() - start;
+          output('Done! Took: ' + took);
+          outputTiming(took);
+        }
+
+        resolve();
+
+      };
+      trans.onerror = reject;
+    }));
+  }
+
+  return Promise.all(arr);
+}
+
+
+
 export function sumAll(db, output, outputTiming) {
   let start = Date.now();
   let trans = db.transaction(['kv'], 'readonly');

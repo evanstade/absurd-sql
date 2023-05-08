@@ -165,6 +165,38 @@ async function populate(count, { timings = true } = {}) {
   }
 }
 
+async function doPopulateManyTransactions(count, { timings = true } = {}) {
+  let q = useRawIDB ? rawIDBQueries : queries;
+  let db = await getDatabase();
+
+  q.clear(db, output);
+
+  if (recordProfile) {
+    sqlFS.backend.startProfile();
+  }
+
+  // Only reason this needs to `await` is for the raw idb
+  // implementation; sqlite would be sync
+  await q.populateManyTransactions(db, count, output, timings ? outputTiming : () => {});
+
+  if (recordProfile) {
+    sqlFS.backend.stopProfile();
+  }
+
+  if (!useRawIDB) {
+    let { node } = SQL.FS.lookupPath(`/blocked/${dbName}`);
+    let file = node.contents;
+
+    output(
+      'File is now: ' +
+        formatNumber(file.meta.size / 1024) +
+        'KB as ' +
+        formatNumber(file.meta.size / 4096) +
+        ' blocks'
+    );
+  }
+}
+
 async function populateSmall() {
   clearTimings();
 
@@ -182,6 +214,13 @@ async function populateLarge() {
     count = 100000;
   }
   return populate(count);
+}
+
+async function populateManyTransactions() {
+  clearTimings();
+
+  let count = 10000;
+  return doPopulateManyTransactions(count);
 }
 
 async function sumAll({ clear = true } = {}) {
@@ -283,6 +322,7 @@ let methods = {
   init,
   populateSmall,
   populateLarge,
+  populateManyTransactions,
   sumAll,
   randomReads,
   deleteFile,

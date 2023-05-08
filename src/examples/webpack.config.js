@@ -5,7 +5,9 @@ function getConfig(name, entry, html) {
   return {
     name,
     devServer: {
-      publicPath: '/',
+      devMiddleware: {
+        publicPath: '/',
+      },
       hot: true,
       headers: {
         'Cross-Origin-Opener-Policy': 'same-origin',
@@ -38,6 +40,6 @@ function getConfig(name, entry, html) {
 }
 
 module.exports = [
-  getConfig('bench', './bench/main.js', './bench/index.html'),
-  getConfig('fts', './fts/main.js', './fts/index.html')
+  getConfig('bench', './bench/main.js', './bench/index.html')
+ // getConfig('fts', './fts/main.js', './fts/index.html')
 ];

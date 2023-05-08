@@ -101,6 +101,7 @@ let methods = [
   'init',
   'populateSmall',
   'populateLarge',
+  'populateManyTransactions',
   'sumAll',
   'randomReads',
   'deleteFile',

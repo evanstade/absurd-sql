@@ -41,6 +41,10 @@ function populate(db, count, output = console.log, outputTiming = console.log) {
   outputTiming(took);
 }
 
+function populateManyTransactions(db, count, output = console.log, outputTiming = console.log) {
+  output('Not implemented');
+}
+
 function sumAll(db, output = console.log, outputTiming = console.log) {
   output('Running <code>SELECT COUNT(*) FROM kv</code>');
 
